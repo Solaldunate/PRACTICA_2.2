@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrera</title>
+  <style>
+    body {
+      background: linear-gradient(to left, #FFC0CB, #ADD8E6); 
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      text-align: center;
+      margin-top: 30px;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin: 20px 0;
+      font-size: 18px;
+    }
+    input[type="number"] {
+      width: 60px;
+      padding: 5px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #FF69B4;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #FF1493;
+    }
+    #raceResults {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 10px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    ol {
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 10px;
+    }
+    .runner {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      background-color: red;
+      border-radius: 50%;
+      font-size: 18px;
+      color: white;
+    }
+    .runner:nth-child(2n) {
+      background-color: blue;
+    }
+    .runner:nth-child(3n) {
+      background-color: green;
+    }
+    .runner:nth-child(4n) {
+      background-color: yellow;
+    }
+    .runner:nth-child(5n) {
+      background-color: orange;
+    }
+    .runner:nth-child(6n) {
+      background-color: purple;
+    }
+  </style>
+</head>
+<body>
+  <h1>Carrera de Corredores</h1>
+  <label for="numRunners">Número de Corredores:</label>
+  <input type="number" id="numRunners" min="1" value="1">
+  <button onclick="startRace()">Comenzar Carrera</button>
+  <div id="raceResults" style="display: none;">
+  </div>
+  <script>
+    function startRace() {
+      var numRunners = parseInt(document.getElementById('numRunners').value);
+      var positions = [];
+      for (var i = 1; i <= numRunners; i++) {
+        var position = parseInt(prompt('Posición del corredor ' + i));
+        positions.push(position);
+      }
+      race(positions, function(results) {
+        var resultsHTML = '<h2 style="color: #FF69B4; text-align: center;">Resultados de la Carrera:</h2><ol>';
+        results.forEach(function(result, index) {
+          resultsHTML += '<li style="color: #333;">Corredor ' + (index + 1) + ' - Posición: ' + result + '</li>';
+        });
+        resultsHTML += '</ol>';
+        document.getElementById('raceResults').innerHTML = resultsHTML;
+        document.getElementById('raceResults').style.display = 'block';
+      });
+    }
+    function race(positions, callback) {
+      var runners = [];
+      var raceTrackWidth = window.innerWidth - 100; 
+      var raceTrackHeight = window.innerHeight / 2; 
+      var maxPosition = Math.max(...positions);
+      for (var i = 0; i < positions.length; i++) {
+        var runner = document.createElement('div');
+        runner.className = 'runner';
+        runner.innerText = i + 1; 
+        runner.style.left = '0px'; 
+        runner.style.top = raceTrackHeight + 'px'; 
+        document.body.appendChild(runner);
+        runners.push(runner);
+      }
+      moveRunners(runners, positions, raceTrackWidth, maxPosition, callback);
+    }
+    function moveRunners(runners, positions, raceTrackWidth, maxPosition, callback) {
+      var interval = setInterval(function() {
+        var allFinished = true;
+        for (var i = 0; i < runners.length; i++) {
+          if (parseInt(runners[i].style.left) < raceTrackWidth) {
+            allFinished = false;
+            var step = Math.random() * 20; 
+            var newPosition = parseInt(runners[i].style.left) + step;
+            runners[i].style.left = newPosition + 'px';
+          }
+        }
+        if (allFinished) {
+          clearInterval(interval);
+          callback(positions);
+        }
+      }, 100);
+    }
+  </script>
+
+</body>
+</html>
